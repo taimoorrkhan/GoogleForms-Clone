@@ -8,7 +8,7 @@ export default function Page() {
         <Text style={styles.title}>Hello to Google Forms Clone</Text>
 
         <Link href={'/checkout'} style={styles.subtitle}>
-          Next --->
+          Next ---
         </Link>
       </View>
     </View>

@@ -7,12 +7,12 @@ export const PersonalInfoSchema = z
   .object({
     name: z.string({ required_error: 'Name is required' }).min(1),
     email: z.string().email({ message: 'Please provide a valid email!' }),
- /*    password: z.string(),
+    password: z.string(),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword'], */
+    path: ['confirmPassword'],
   });
 
 export type PersonalInfo = z.infer<typeof PersonalInfoSchema>;
