@@ -1,59 +1,85 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Link, useRouter } from 'expo-router'
-import { Button, Card, DataTable, TextInput, useTheme } from 'react-native-paper'
-export default function PayemntDetails() {
-  const theme = useTheme();
+import { useRouter } from 'expo-router';
+import { Alert, ScrollView, View } from 'react-native';
+import { Button, Card, useTheme, Checkbox } from 'react-native-paper';
+
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  PaymentInfo,
+  PaymentInfoSchema,
+} from '../../src/schema/checkoutSchema';
+import ControlledInput from '../../src/components/‎ControlledInput';
+import { useCheckoutContext } from '../../src/contexts/CheckoutContext';
+
+export default function PaymentDetails() {
+  const { control, handleSubmit } = useForm<PaymentInfo>({
+    resolver: zodResolver(PaymentInfoSchema),
+  });
+
+  const { onSubmitAll } = useCheckoutContext();
   const router = useRouter();
+  const theme = useTheme();
 
+  const nextPage = async (data: PaymentInfo) => {
+    // Submit
+    const success = await onSubmitAll(data);
 
-  const nextPage = () => {
-    router.push('/')
-  }
+    if (success) {
+      router.push('/');
+    } else {
+      Alert.alert('Failed to submit the form');
+    }
+  };
   return (
-    <ScrollView contentContainerStyle={{ gap: 10 }}>
-      <Card style={{
-        backgroundColor: theme.colors.background,
-      }} >
-        <Card.Title title="Delivery Address" titleVariant='titleLarge' />
+    <ScrollView
+      contentContainerStyle={{
+        gap: 15,
+        maxWidth: 500,
+        width: '100%',
+        alignSelf: 'center',
+      }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Card style={{ backgroundColor: theme.colors.background }}>
+        <Card.Title title={'Payment details'} titleVariant="titleLarge" />
         <Card.Content style={{ gap: 10 }}>
-          <TextInput style={{
-            backgroundColor: theme.colors.background,
-          }} label='Card Title' />
-          <TextInput style={{
-            backgroundColor: theme.colors.background,
-          }} label='Card Number'
-            placeholder='4242 4242 4242 4242' />
+          <ControlledInput
+            control={control}
+            name="number"
+            label={'Card number'}
+            placeholder="4242 4242 4242 4242"
+          />
+          <View style={{ flexDirection: 'row', gap: 15 }}>
+            <ControlledInput
+              control={control}
+              name="expirationDate"
+              label={'Expiration date'}
+              placeholder="mm/yyyy"
+            />
+            <ControlledInput
+              control={control}
+              name="securityCode"
+              label={'Security code'}
+            />
+          </View>
 
-          <DataTable style={{
-            backgroundColor: theme.colors.background,
-
-          }}>
-            <DataTable.Row aria-label='E'>
-              <DataTable.Cell>Month</DataTable.Cell>
-              <DataTable.Cell>Year</DataTable.Cell>
-            </DataTable.Row>
-
-            <DataTable.Row>
-              <DataTable.Cell> <TextInput style={{
-                backgroundColor: theme.colors.background,
-              }} label='MM' /> </DataTable.Cell>
-              <DataTable.Cell> <TextInput style={{
-                backgroundColor: theme.colors.background,
-              }} label='YYYY' /> </DataTable.Cell>
-            </DataTable.Row>
-          </DataTable>
-          <TextInput style={{
-            backgroundColor: theme.colors.background,
-          }} label="Security Code" />
-
+          <Controller
+            control={control}
+            name="saveInfo"
+            render={({ field: { value, onChange } }) => (
+              <Checkbox.Item
+                label="Save payment information"
+                onPress={() => onChange(!value)}
+                status={value ? 'checked' : 'unchecked'}
+              />
+            )}
+          />
         </Card.Content>
       </Card>
-      <Button onPress={nextPage} mode='contained'>
+
+      <Button onPress={handleSubmit(nextPage)} mode="contained">
         Submit
       </Button>
-    </ScrollView >
-  )
+    </ScrollView>
+  );
 }
-
-const styles = StyleSheet.create({})
