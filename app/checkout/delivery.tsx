@@ -1,55 +1,104 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React,{useState} from 'react'
-import { Link,useRouter } from 'expo-router'
-import { Button, Card, TextInput, useTheme,RadioButton } from 'react-native-paper'
+import { useRouter } from 'expo-router';
+import { View, ScrollView } from 'react-native';
+import {
+  Button,
+  Card,
+  useTheme,
+  RadioButton,
+  HelperText,
+} from 'react-native-paper';
+
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  DeliveryInfo,
+  DeliveryInfoSchema,
+} from '../../src/schema/checkoutSchema';
+import ControlledInput from '../../src/components/‎ControlledInput';
+import { useCheckoutContext } from '../../src/contexts/CheckoutContext';
 
 export default function DeliveryDetails() {
-  const [shipping, setShipping] = useState('first');
-  const theme = useTheme();
+  const { control, handleSubmit } = useForm<DeliveryInfo>({
+    resolver: zodResolver(DeliveryInfoSchema),
+    defaultValues: {
+      shipping: 'free',
+    },
+  });
+
+  const { setDelivery } = useCheckoutContext();
   const router = useRouter();
-  const nextPage = () => {
-    router.push('/checkout/payment')
-  }
+  const theme = useTheme();
+
+  const nextPage = (data: DeliveryInfo) => {
+    setDelivery(data);
+    router.push('/checkout/payment');
+  };
+
   return (
-    <ScrollView contentContainerStyle={{ gap: 10 }}
+    <ScrollView
+      contentContainerStyle={{
+        gap: 15,
+        maxWidth: 500,
+        width: '100%',
+        alignSelf: 'center',
+      }}
       showsVerticalScrollIndicator={false}
     >
-      
-      <Card style={{
-        backgroundColor: theme.colors.background,
-      }} >
-        <Card.Title title="Delivery Address" titleVariant='titleLarge'  />
+      <Card style={{ backgroundColor: theme.colors.background }}>
+        <Card.Title title={'Deliver address'} titleVariant="titleLarge" />
         <Card.Content style={{ gap: 10 }}>
-          <TextInput style={{
-            backgroundColor: theme.colors.background,
-          }} placeholder='City' label='City' />
-          <TextInput style={{
-            backgroundColor: theme.colors.background,
-          }} placeholder='Address' label='Address' />
-          <TextInput style={{
-            backgroundColor: theme.colors.background,
-          }} placeholder='Postal Code' label='Postal Code' />
-
+          <ControlledInput
+            control={control}
+            name="city"
+            label={'City'}
+            style={{ backgroundColor: theme.colors.background }}
+          />
+          <ControlledInput
+            control={control}
+            name="postalCode"
+            label={'Postal code'}
+            style={{ backgroundColor: theme.colors.background }}
+          />
+          <ControlledInput
+            control={control}
+            name="address"
+            label={'Address'}
+            style={{ backgroundColor: theme.colors.background }}
+          />
         </Card.Content>
       </Card>
-      <Card style={{
-        backgroundColor: theme.colors.background,
-      }} >
-        <Card.Title title="Shipping Options" titleVariant='titleLarge' />
-        <Card.Content style={{ gap: 10 }}>
-          <RadioButton.Group value={shipping} onValueChange={newValue => setShipping(newValue)} >
-            <RadioButton.Item label="Standard Delivery (Free)" value="first" />
-            <RadioButton.Item label="Express Delivery (10$)" value="fast" />
-            <RadioButton.Item label="Courier Delivery (20$)" value="same-day" />
-          </RadioButton.Group>
 
+      <Card style={{ backgroundColor: theme.colors.background }}>
+        <Card.Title title={'Shipping options'} titleVariant="titleLarge" />
+        <Card.Content style={{ gap: 10 }}>
+          <Controller
+            control={control}
+            name="shipping"
+            render={({
+              field: { value, onChange },
+              fieldState: { invalid, error },
+            }) => (
+              <View>
+                <HelperText type="error" visible={invalid}>
+                  {error?.message}
+                </HelperText>
+                <RadioButton.Group
+                  value={value}
+                  onValueChange={(value) => onChange(value)}
+                >
+                  <RadioButton.Item label="Free" value="free" />
+                  <RadioButton.Item label="Fast" value="fast" />
+                  <RadioButton.Item label="Same day" value="same_day" />
+                </RadioButton.Group>
+              </View>
+            )}
+          />
         </Card.Content>
       </Card>
-      <Button onPress={nextPage} mode='contained'>
+
+      <Button onPress={handleSubmit(nextPage)} mode="contained">
         Next
       </Button>
     </ScrollView>
-  )
+  );
 }
-
-const styles = StyleSheet.create({})

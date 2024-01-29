@@ -1,8 +1,8 @@
 import { Stack, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-
+import CheckoutContextProvider from "../../src/contexts/CheckoutContext";
 export default function CheckoutStack() {
-  return <>
+  return <CheckoutContextProvider>
     <StatusBar style="light"  backgroundColor="#673AB8" />
     <Stack screenOptions={{
       contentStyle: {
@@ -29,5 +29,5 @@ export default function CheckoutStack() {
       }}
       />
     </Stack>
-  </>
+  </CheckoutContextProvider>
 }
