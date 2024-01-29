@@ -5,10 +5,10 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <Text style={styles.title}>Hello World</Text>
+        <Text style={styles.title}>Hello to Google Forms Clone</Text>
 
         <Link href={'/checkout'} style={styles.subtitle}>
-          Checkout
+          Next --->
         </Link>
       </View>
     </View>
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
   },
   title: {
-    fontSize: 64,
+    fontSize:44,
     fontWeight: 'bold',
   },
   subtitle: {
