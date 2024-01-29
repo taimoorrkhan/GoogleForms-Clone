@@ -16,7 +16,7 @@ export default function CheckoutStack() {
       headerTintColor: '#F8EBF8',
 
     }}>
-      <Stack.Screen name="index" options={{
+      <Stack.Screen name="personal" options={{
         title: "Personel Info"
       }}
       />
